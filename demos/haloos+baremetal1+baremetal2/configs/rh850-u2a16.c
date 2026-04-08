@@ -9,7 +9,7 @@ struct config config = {
 
     CONFIG_HEADER
 
-    .vmlist_size = 2,
+    .vmlist_size = 3,
 
     .vmlist = (struct vm_config[]){
         // HaloOS
@@ -59,7 +59,7 @@ struct config config = {
                 },
             }
         },
-        // Baremetal
+        // Baremetal1
         {
             .entry = 0x7F0000,
             .image = VM_IMAGE_LOADED(0x7F0000,0x7F0000,0x10000),
@@ -112,6 +112,63 @@ struct config config = {
                         .size = 0x100,
                         .interrupt_num = 1,
                         .interrupts = (irqid_t[]) {199}
+                    },
+                    // INTC1 (self)
+                    {
+                        // 0xFFFC0000 -> 0xFFFC4000
+                        .id = 0,
+                        .pa = 0xFFFC0000,
+                        .va = 0xFFFC0000,
+                        .size = 0x4000,
+                        .interrupt_num = 0,
+                        .interrupts = NULL
+                    }
+                },
+            }
+        },
+        // Baremetal2
+        {
+            .entry = 0x7E0000,
+            .image = VM_IMAGE_LOADED(0x7E0000,0x7E0000,0x10000),
+            .cpu_affinity = 0x4,
+
+            .platform = {
+                .cpu_num = 1,
+                .region_num = 2,
+                .regions =  (struct vm_mem_region[]) {
+                    // Code Flash (Bank A) -> Guest code
+                    {
+                        .base = 0x7E0000,
+                        .size = 0x10000
+                    },
+                    // Cluster1 RAM -> Guest Data
+                    {
+                        .base = 0xfe800000,
+                        .size = 0x40000
+                    }
+                },
+
+                .dev_num = 3,
+                .devs =  (struct vm_dev_region[]) {
+                    // RLIN34
+                    {
+                        // 0xFFC7C100 -> 0xFFC7C140
+                        .id = 0,
+                        .pa = 0xFFD28400,
+                        .va = 0xFFD28400,
+                        .size = 0x40,
+                        .interrupt_num = 1,
+                        .interrupts = (irqid_t[]) {434}
+                    },
+                    // OSTM1
+                    {
+                        // 0xFFBF0000 -> 0xFFBF0100
+                        .id = 0,
+                        .pa = 0xFFBF0100,
+                        .va = 0xFFBF0100,
+                        .size = 0x100,
+                        .interrupt_num = 1,
+                        .interrupts = (irqid_t[]) {200}
                     },
                     // INTC1 (self)
                     {
